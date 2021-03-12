@@ -1,0 +1,53 @@
+SHELL  = /bin/sh
+EXEPRG = Euler
+EXEEXT = .FV
+FLGDIR = ../flags
+BINDIR = ../executables
+VPATH  = ../source
+TARGET = $(BINDIR)/$(EXEPRG)$(EXEEXT)
+
+# List of files
+ALL =   my_kinddefs \
+        data_modules \
+        norm_module \
+        geometry_module \
+        read_mesh_module \
+        time_step_module \
+        inputs_initialization_module \
+        solution_initialization_module \
+        bc_module \
+        limiter_module \
+        gradient_module \
+        flux_module \
+        rhs_module \
+        output_module \
+        evolve_solution_module
+
+# Main files (for multiple targets)
+SRCS = EulerFV
+
+# Ensemble List
+DEFS = $(foreach define, $(DEFINE),-D$(define))
+OBJS = $(foreach module, $(ALL) $(SRCS),$(module).o)
+LIBS =
+
+# Load flags from $(FLGDIR)
+include $(FLGDIR)/Makefile.$(ARCH)
+
+%.o : %.c
+	$(CC) -c $(CFLAGS) $(DEFS) $<
+
+%.o: %.f90
+	$(FC) -c $(FFLAGS) $(DEFS) $<
+
+%.o: %.F90
+	$(FC) -c $(FFLAGS) $(DEFS) $<
+
+$(TARGET): $(OBJS) $(HDRS)
+	@echo ""
+	@echo " >> Linking : $@ "
+	@echo ""
+	$(LD) $(LDFLAGS) $(OBJS) $(LIBS) -o $@
+	@echo ""
+	@echo " >> Status : ok! "
+	@echo ""

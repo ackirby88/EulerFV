@@ -1,0 +1,30 @@
+# Compiler Parallel/Serial
+ifdef MPIPRG
+  CC = mpicc
+  FC = mpif90
+else
+  CC = icpc
+  FC = ifort
+endif
+
+# Linker
+LD = $(FC)
+
+# Archiver
+AR = ar
+
+# Optimization level
+CFLAGS  = -O2
+FFLAGS = -O2 -convert big_endian -cpp 
+
+#FFLAGS = -convert big_endian -p -g -O2
+#FFLAGS = -convert big_endian -no-prec-div -O0 -r8 -extend_source -vec-report=0 -fPIC -warn all -gen_interfaces -fpe0 -check all -g -traceback
+
+# Linking flags
+LDFLAGS = $(FFLAGS)
+
+# Archiver flags
+ARFLAGS = rv
+
+# Indexing the archive
+RANLIB  = ranlib

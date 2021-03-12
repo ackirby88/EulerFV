@@ -1,0 +1,55 @@
+===============================
+// INPUTS EXPLANATIONS BELOW //
+===============================
+
+&INPUTS
+    stats_name      = '../meshes/naca0012fine/NACA0012.fine.grid.stats',
+    nodes_name      = '../meshes/naca0012fine/NACA0012.fine.grid.nodes',
+    cells_name      = '../meshes/naca0012fine/NACA0012.fine.grid.cells',
+    edges_name      = '../meshes/naca0012fine/NACA0012.fine.grid.edges',
+    restart         = .false.,
+    checkpoint_name = 'roe_100.checkpoint',
+    gamma           = 1.4,
+    fmach           = 0.8,
+    alpha           = 1.25,
+    density0        = 1.0,
+    pressure0       = 0.7142857142857143,
+    limiterScheme   = 'minmod',
+    fluxScheme      = 1,
+    spatial_order   = 2,
+    outer_bc        = 4,
+    wall_bc         = 2,
+    CFL             = 0.8,
+    timeSteps       = 100000,
+    timeScheme      = 1,
+    tacc            = .false.,
+    output_file     = 'cfd',
+    output_freq     = 1000,
+    checkpoint_freq = 1000 /
+
+===============================================================================
+// INPUTS
+//    stats_name      = # file path to stats file
+//    nodes_name      = # file path to nodes file
+//    cells_name      = # file path to cells file
+//    edges_name      = # file path to edges file
+//    restart         = # restart flag: [.true.] [.false.]
+//    checkpoint_name = # path to checkpoint file for restart
+//    gamma           = # ratio of specific heats (air: 1.4)
+//    fmach           = # free-stream Mach number: [0,1.2]
+//    alpha           = # angle of attach (degrees)
+//    density0        = # free-stream density (non-dimensional: 1.0)
+//    pressure0       = # free-stream pressure (non-dimensional: 0.7142857142857143 = 1/gamma)
+//    limiterScheme   = # Limiter: ['vanLeer','vanAlbada1','vanAlbada2','superbee','minmod','Koren','Osher','UMIST','ospre']
+//    fluxScheme      = # Riemann Flux: [1] Roe with Entropy Fix, [2] Lax Friedrichs
+//    spatial_order   = # Residual Spatial Accuracy: [1] 1st Order, [2] 2nd Order (gradient reconstruction)
+//    outer_bc        = # inflow/outflow boundary condition: [1] free-stream, [4] characteristic
+//    wall_bc         = # wall boundary condition: [2] slip wall, [3] no-slip wall
+//    CFL             = # Courant-Fredrichs-Lewy Number: [0,1] (scales time step)
+//    timeSteps       = # Number of time step
+//    timeScheme      = # Time marching scheme: [1] RK1-Forward Euler
+//    tacc            = # Time accuracy flag: [.false.] [.true.](true is very slow)
+//    output_file     = # Name of output file
+//    output_freq     = # Frequency of visualization
+//    checkpoint_freq = # Frequency of checkpoint
+===============================================================================
