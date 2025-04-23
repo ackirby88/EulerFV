@@ -12,7 +12,7 @@ module norm_module
 
         integer(i4) :: i
 
-        norm = 0.0
+        norm = 0.0_dp
 
         do i = 1,nf*ne
             norm = norm + A(i)*A(i)

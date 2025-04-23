@@ -1,10 +1,9 @@
 # Compiler Parallel/Serial
 ifdef MPIPRG
-  CC = mpicc
+  CXX = mpicxx
   FC = mpif90
 else
-  CC = gcc
-  FC = /usr/bin/gfortran
+  CXX = g++
   FC = gfortran
 endif
 
@@ -15,13 +14,15 @@ LD = $(FC)
 AR = ar
 
 # Optimization level
-CFLAGS  = #-O2
+CXXFLAGS  = -O2 -g
 
-FFLAGS = -O2 -fconvert=big-endian
+FFLAGS = -O2 -fconvert=big-endian -g
 #FFLAGS = -O0 -pg -fconvert=big-endian -Wall -Wextra -pedantic -fimplicit-none -fbounds-check -fbacktrace -ffpe-trap=zero,overflow,underflow 
 
 # Linking flags
 LDFLAGS = $(FFLAGS)
+
+LIBFLAGS=-lstdc++
 
 # Archiver flags
 ARFLAGS = rv

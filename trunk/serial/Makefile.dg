@@ -8,6 +8,8 @@ TARGET = $(BINDIR)/$(EXEPRG)$(EXEEXT)
 
 # List of files
 ALL =   my_kinddefs \
+	c_printer \
+	c_printer_module \
         data_modules \
         norm_module \
         geometry_module \
@@ -29,13 +31,13 @@ SRCS = EulerFV
 # Ensemble List
 DEFS = $(foreach define, $(DEFINE),-D$(define))
 OBJS = $(foreach module, $(ALL) $(SRCS),$(module).o)
-LIBS =
+LIBS = -lstdc++
 
 # Load flags from $(FLGDIR)
 include $(FLGDIR)/Makefile.$(ARCH)
 
-%.o : %.c
-	$(CC) -c $(CFLAGS) $(DEFS) $<
+%.o : %.cxx
+	$(CXX) -c $(CXXFLAGS) $(DEFS) $<
 
 %.o: %.f90
 	$(FC) -c $(FFLAGS) $(DEFS) $<

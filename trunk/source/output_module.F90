@@ -19,10 +19,12 @@ module output_module
         integer(i4)   :: io
         integer(i4)   :: n,n1,n2,n3
 
-        real(dp) :: ddensity,u,v,vort,oneOrho
+        real(dp) :: ddensity,u,v,vort,oneOrho,rho,pressure,gamma,kappa,e,mach
         real(dp) :: dudx,dvdx,dudy,dvdy
         real(dp) :: vv1,vv2,vv3
 
+        gamma = 1.4_dp
+        kappa = gamma - 1.0_dp
 
         print*,'# Writing to File...',printCount
         ! ================== !
@@ -48,33 +50,56 @@ module output_module
             write(iunit,*)' <UnstructuredGrid>'
             write(iunit,*)'  <Piece NumberOfPoints="',3*numElem,'" NumberOfCells="',numElem,'">'
             write(iunit,*)'   <CellData>'
-            write(iunit,*)'    <DataArray type="Float32" Name="rho" Format="ascii">'
+            write(iunit,*)'    <DataArray type="Float32" Name="Mach" Format="ascii">'
+                do n = 1,numElem
+                    rho      = solCoeffs(1,n);
+                    oneOrho  = 1.0_dp / rho
+                    u        = solCoeffs(2,n)*oneOrho
+                    v        = solCoeffs(3,n)*oneOrho;
+                    e        = solCoeffs(4,n)*oneOrho;
+                    pressure = kappa*(solCoeffs(4,n) - 0.5_dp*rho*(u*u + v*v))
+                    mach     = sqrt(u*u + v*v)/sqrt(gamma*pressure*oneOrho)
+                    write(iunit,*)'    ',mach
+                end do
+            write(iunit,*)'    </DataArray>'
+            write(iunit,*)'    <DataArray type="Float32" Name="Pressure" Format="ascii">'
+                do n = 1,numElem
+                    rho      = solCoeffs(1,n);
+                    oneOrho  = 1.0_dp / rho
+                    u        = solCoeffs(2,n)*oneOrho
+                    v        = solCoeffs(3,n)*oneOrho;
+                    e        = solCoeffs(4,n)*oneOrho;
+                    pressure = kappa*(solCoeffs(4,n) - 0.5_dp*rho*(u*u + v*v))
+                    write(iunit,*)'    ',pressure
+                end do
+            write(iunit,*)'    </DataArray>'
+            write(iunit,*)'    <DataArray type="Float32" Name="Density" Format="ascii">'
                 do n = 1,numElem
                     write(iunit,*)'    ',solCoeffs(1,n)
                 end do
             write(iunit,*)'    </DataArray>'
-            write(iunit,*)'    <DataArray type="Float32" Name="u" Format="ascii">'
+            write(iunit,*)'    <DataArray type="Float32" Name="Vel-U" Format="ascii">'
                 do n = 1,numElem
                     write(iunit,*)'    ',solCoeffs(2,n)/solCoeffs(1,n)
                 end do
             write(iunit,*)'    </DataArray>'
-            write(iunit,*)'    <DataArray type="Float32" Name="v" Format="ascii">'
+            write(iunit,*)'    <DataArray type="Float32" Name="Vel-V" Format="ascii">'
                 do n = 1,numElem
                     write(iunit,*)'    ',solCoeffs(3,n)/solCoeffs(1,n)
                 end do
             write(iunit,*)'    </DataArray>'
-            write(iunit,*)'    <DataArray type="Float32" Name="rhoE" Format="ascii">'
+            write(iunit,*)'    <DataArray type="Float32" Name="Energy Density" Format="ascii">'
                 do n = 1,numElem
                     write(iunit,*)'    ',solCoeffs(4,n)
                 end do
             write(iunit,*)'    </DataArray>'
-            write(iunit,*)'    <DataArray type="Float32" Name="density gradient" Format="ascii">'
+            write(iunit,*)'    <DataArray type="Float32" Name="Density Gradient" Format="ascii">'
                 do n = 1,numElem
                     ddensity = sqrt(dQ(1,1,n)*dQ(1,1,n) + dQ(1,2,n)*dQ(1,2,n))
                     write(iunit,*)'    ',ddensity
                 end do
             write(iunit,*)'    </DataArray>'
-            write(iunit,*)'    <DataArray type="Float32" Name="vorticity" Format="ascii">'
+            write(iunit,*)'    <DataArray type="Float32" Name="Vorticity" Format="ascii">'
                 do n = 1, numElem
                     oneOrho = 1.0 / solCoeffs(1,n)
                     u = solCoeffs(2,n)*oneOrho
