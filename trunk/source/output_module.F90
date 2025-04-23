@@ -328,14 +328,17 @@ module output_module
         close(iunit)
     end subroutine
 
-    subroutine nacaSurfacePressure(project,solCoeffs)
+    subroutine nacaSurfacePressure(project,Q)
         use my_kinddefs
+        use gradient_module
+        use solution_module,only: dQ
+        use inputs_module,  only: spatial_order
         use inputs_module,  only: gamma,pressure0,density0,u0,v0,gm1
-        use globals_module, only: edgeList,numBoundary,numEdge,boundaryEdgeList,nodeList
+        use globals_module, only: edgeList,numBoundary,numEdge,boundaryEdgeList,nodeList,numFields
         implicit none
 
         character(*),intent(in) :: project
-        real(dp),    intent(in) :: solCoeffs(:,:) !res(numEulerVars,numElem)
+        real(dp),    intent(in) :: Q(:,:) !res(numEulerVars,numElem)
 
         integer(i4) :: i,edgeNum,bc_type,leftTri
         real(dp)  :: p,x_ave
@@ -346,10 +349,14 @@ module output_module
         character(80) :: file_num
         integer(i4)   :: io,tm,elem_id
         integer(i4)   :: iunit
+        real(dp)      :: qMid(numFields)
 
         iunit = 22
         filename = 'WRK/' // adjustr(trim(project)) // '_Cp.dat'
         open(unit = iunit, file = filename, status = 'replace', iostat = io)
+
+        ! calculate flow gradients if not already calculated
+        if(spatial_order /= 2) call gradient(Q,dQ)
 
         if (io /= 0) then
            print*,'ERROR: Opening Cp File'
@@ -364,13 +371,22 @@ module output_module
                 x_ave = half*(nodeList(edgeList(edgeNum)%n1)%x + nodeList(edgeList(edgeNum)%n2)%x)
 
                  if (bc_type == 1) then !wall boundary
-                     !----> Calculate pressure: print x_ave,pressure
-                        rho = solCoeffs(1,leftTri)
-                        u   = solCoeffs(2,leftTri)/rho
-                        v   = solCoeffs(3,leftTri)/rho
-                        p   = gm1*(solCoeffs(4,leftTri) - 0.5_dp*rho*(u*u + v*v))
+                    !----> Construct the midpoint solutions using the gradient extensions
+                    qMid(:) = Q(:, leftTri) + 0.8 * matmul(dQ(:,:,leftTri), edgeList(edgeNum) % C2Mvector(:, 1))
 
-                        write(iunit,*) x_ave, -((p-pressure0)/(half*density0*(u0*u0 + v0*v0)))
+                    !----> Calculate pressure: print (x_ave,Coefficient of Pressure)
+                    rho = qMid(1)
+                    u   = qMid(2)/rho
+                    v   = qMid(3)/rho
+                    p   = gm1*(qMid(4) - 0.5_dp*rho*(u*u + v*v))
+
+                    !----> 1st-order solution
+                    !rho = Q(1,leftTri)
+                    !u   = Q(2,leftTri)/rho
+                    !v   = Q(3,leftTri)/rho
+                    !p   = gm1*(Q(4,leftTri) - 0.5_dp*rho*(u*u + v*v))
+
+                    write(iunit,*) x_ave, -((p-pressure0)/(half*density0*(u0*u0 + v0*v0)))
                  end if
            end do
         end if

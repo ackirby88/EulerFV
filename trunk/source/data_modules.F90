@@ -72,6 +72,7 @@ module inputs_module
     character(20) :: output_file     ! Name of the output file
     integer(i4)   :: output_freq     ! Output file frequency
     integer(i4)   :: checkpoint_freq ! Checkpoint file frequency
+    integer(i4)   :: logging_freq=10 ! Logging frequency (L2 norm)
     logical       :: restart         ! Restart solution flag from checkpoint
 
     character(20) :: limiterScheme   ! Name of limiter

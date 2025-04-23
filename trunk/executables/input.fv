@@ -8,9 +8,9 @@
     cells_name      = '../meshes/naca0012fine/NACA0012.fine.grid.cells',
     edges_name      = '../meshes/naca0012fine/NACA0012.fine.grid.edges',
     restart         = .false.,
-    checkpoint_name = 'roe_100.checkpoint',
+    checkpoint_name = './WRK.1/cfd_0009.checkpoint',
     gamma           = 1.4,
-    fmach           = 0.8,
+    fmach           = 0.85,
     alpha           = 1.25,
     density0        = 1.0,
     pressure0       = 0.7142857142857143,
@@ -20,12 +20,13 @@
     outer_bc        = 4,
     wall_bc         = 2,
     CFL             = 0.8,
-    timeSteps       = 100000,
+    timeSteps       = 20000,
     timeScheme      = 1,
     tacc            = .false.,
     output_file     = 'cfd',
     output_freq     = 1000,
-    checkpoint_freq = 1000 /
+    checkpoint_freq = 1000,
+    logging_freq    = 10 /
 
 ===============================================================================
 // INPUTS
@@ -52,4 +53,5 @@
 //    output_file     = # Name of output file
 //    output_freq     = # Frequency of visualization
 //    checkpoint_freq = # Frequency of checkpoint
+//    logging_freq    = # Frequency of L2 norm check
 ===============================================================================

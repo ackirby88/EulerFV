@@ -24,7 +24,7 @@ module evolve_solution_module
         use output_module
         use time_step_module
         use inputs_module, only: spatial_order,cfl,tacc
-        use inputs_module, only: output_freq,checkpoint_freq,output_file
+        use inputs_module, only: logging_freq,output_freq,checkpoint_freq,output_file
         use globals_module, only: elem_h,numFields,numElem
         use solution_module, only: dt
         use c_printer_module
@@ -43,7 +43,7 @@ module evolve_solution_module
         integer(i4) :: Rmode,Qmode
 
         Rmode = 1
-        Qmode = 2     
+        Qmode = 2
         vecSize = numFields*numElem
 
         ! ======================================================== !
@@ -53,15 +53,18 @@ module evolve_solution_module
 
                 !------ spatial residual ------!
                 call rhs(spatial_order,Q,R)
-                call L2_norm(numFields,numElem,R,norm)
-                call L2_norm(numFields,numElem,Q,normQ)
 
-                !call c_printer(Rmode,R,vecSize,timeStep)
-                !call c_printer(Qmode,Q,vecSize,timeStep)
+                if (MOD(timeStep,logging_freq) == 0) then
+                    call L2_norm(numFields,numElem,R,norm)
+                    call L2_norm(numFields,numElem,Q,normQ)
+                    print*,"Time Step: ",timeStep, ", L2 Norm: ",norm, ", Q norm:", normQ, ", dt:",dt(1)
+
+                    !call c_printer(Rmode,R,vecSize,timeStep)
+                    !call c_printer(Qmode,Q,vecSize,timeStep)
+                end if
 
                 !------ update solution ------!
                 call time_step(tacc,numFields,numElem,Q,elem_h,cfl,dt)
-                !dt(1) = 90.0_dp
 
                 if (tacc) then
                     do elem_id = 1,numElem
@@ -74,7 +77,6 @@ module evolve_solution_module
                 end if
 
                 !--------------- Output Solution and Residual ---------------!
-                print*,"Time Step: ",timeStep, "L2 Norm: ",norm, "Q norm:", normQ, "dt:",dt(1)
                 if (MOD(timeStep,output_freq) == 0) then
                     call cpu_time(t2)
                     print*,'CPU-Time per DOF:', (t2-t1)/timeStep/(numElem)
@@ -91,9 +93,14 @@ module evolve_solution_module
         print*,'CPU-Time per DOF:', (t2-t1)/timesteps/numElem
         ! ======================================================== !
 
-        call output_solution(output_file,Q)
-        call output_residual(output_file,R)
-        call writeResNorm(output_file,norm)
-        call nacaSurfacePressure(output_file,Q)
+        !--------------- Output Final Solution and Residual ---------------!
+        if (MOD(timeStep,output_freq) /= 0) then
+            call output_solution(output_file,Q)
+            call output_residual(output_file,R)
+            call writeResNorm(output_file,norm)
+            call nacaSurfacePressure(output_file,Q)
+        end if
+        !------------------- Checkpoint Final Solution --------------------!
+        if(MOD(timeStep,checkpoint_freq) /= 0) call checkpoint(output_file,Q)
     end subroutine
 end module

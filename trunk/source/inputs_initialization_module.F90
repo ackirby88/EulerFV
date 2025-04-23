@@ -65,12 +65,12 @@ module inputs_initialization_module
         character(80),intent(in) :: file_name
         integer(i4) :: funit,i,ind
 
-        namelist/INPUTS/    stats_name,nodes_name,cells_name,edges_name,&
-                            gamma,fmach,alpha,density0,pressure0,       &
-                            restart,checkpoint_name,                    &
-                            limiterScheme,fluxScheme,spatial_order,     &
-                            outer_bc,wall_bc,                           &
-                            output_file,output_freq,checkpoint_freq,    &
+        namelist/INPUTS/    stats_name,nodes_name,cells_name,edges_name,         &
+                            gamma,fmach,alpha,density0,pressure0,                &
+                            restart,checkpoint_name,                             &
+                            limiterScheme,fluxScheme,spatial_order,              &
+                            outer_bc,wall_bc,                                    &
+                            output_file,output_freq,checkpoint_freq,logging_freq,&
                             CFL,timeSteps,timeScheme,tacc
 
         funit = 22
@@ -100,6 +100,7 @@ module inputs_initialization_module
         write(*,*) "wall_bc: ",wall_bc
         write(*,*)
         write(*,*) "! ---------- Plot/Checkpoint Options ------------ !"
+        write(*,*) "logging_freq: ",logging_freq
         write(*,*) "output_file: ",output_file
         write(*,*) "output_freq: ",output_freq
         write(*,*) "checkpoint_freq: ",checkpoint_freq

@@ -30,3 +30,7 @@
 *.exe
 *.out
 *.app
+*.FV
+
+# Output directories
+WRK*
